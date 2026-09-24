@@ -1,136 +1,379 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Boris Quiroa - Reto Maestro-Detalle</title>
+<meta charset="utf-8" />
+<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+<title>Tablero de Avance - Reto Maestro-Detalle</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet" />
 <style>
-  * { box-sizing: border-box; }
-  body {
-    font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-    background: #0f172a;
-    color: #e2e8f0;
-    margin: 0;
-    padding: 2rem;
+  @layer base {
+    html, body { margin: 0; padding: 0; }
   }
-  h1 { font-size: 1.5rem; margin-bottom: 0.25rem; }
-  .subtitle { color: #94a3b8; margin-bottom: 2rem; }
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1rem;
+  .material-symbols-outlined {
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 20px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    vertical-align: middle;
   }
-  .card {
-    background: #1e293b;
-    border-radius: 12px;
-    padding: 1.25rem;
-    border: 1px solid #334155;
-  }
-  .card h2 { margin: 0 0 0.25rem; font-size: 1.1rem; }
-  .card .correo { color: #94a3b8; font-size: 0.85rem; margin-bottom: 1rem; }
-  .progress-bar {
-    background: #334155;
-    border-radius: 999px;
-    height: 8px;
-    overflow: hidden;
-    margin-bottom: 0.75rem;
-  }
-  .progress-fill {
-    background: #22c55e;
-    height: 100%;
-  }
-  .stats { display: flex; justify-content: space-between; font-size: 0.85rem; color: #cbd5e1; margin-bottom: 0.75rem; }
-  ul.misiones { list-style: none; padding: 0; margin: 0; }
-  ul.misiones li {
-    display: flex;
-    justify-content: space-between;
-    padding: 0.35rem 0;
-    border-bottom: 1px solid #334155;
-    font-size: 0.9rem;
-  }
-  ul.misiones li:last-child { border-bottom: none; }
-  .badge {
-    padding: 0.15rem 0.5rem;
-    border-radius: 999px;
-    font-size: 0.75rem;
-    font-weight: 600;
-  }
-  .badge.completa { background: #14532d; color: #86efac; }
-  .badge.pendiente { background: #451a03; color: #fdba74; }
-  .empty { color: #94a3b8; text-align: center; padding: 3rem; }
-  #status { color: #94a3b8; font-size: 0.85rem; margin-bottom: 1rem; }
+  ::-webkit-scrollbar { display: none; }
 </style>
+<script src="https://cdn.tailwindcss.com"></script>
+<script id="tailwind-config">
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          primary: "#004ac6",
+          "primary-container": "#2563eb",
+          "on-primary": "#ffffff",
+          secondary: "#006c49",
+          "secondary-container": "#6cf8bb",
+          "on-secondary-container": "#00714d",
+          tertiary: "#784b00",
+          "tertiary-container": "#996100",
+          "tertiary-fixed": "#ffddb8",
+          "on-tertiary-fixed-variant": "#653e00",
+          error: "#ba1a1a",
+          "error-container": "#ffdad6",
+          "on-error-container": "#93000a",
+          background: "#f8f9ff",
+          surface: "#f8f9ff",
+          "surface-bright": "#f8f9ff",
+          "surface-container-lowest": "#ffffff",
+          "surface-container-low": "#eff4ff",
+          "surface-container": "#e5eeff",
+          "surface-container-high": "#dce9ff",
+          "surface-container-highest": "#d3e4fe",
+          "on-surface": "#0b1c30",
+          "on-surface-variant": "#434655",
+          outline: "#737686",
+          "outline-variant": "#c3c6d7",
+        },
+      },
+    },
+  };
+</script>
 </head>
-<body>
-  <h1>🎯 Tablero de Avance</h1>
-<p class="subtitle">Reto: API Maestro-Detalle con Catálogo y Control de Estado</p>
-<p class="subtitle" style="color:#e2e8f0; font-weight:600;">
-  Boris Alexander Quiroa Orellana · Carnet 1890-22-1413
-</p>
-  <div class="grid" id="grid"></div>
+<body class="bg-surface text-on-surface antialiased font-[Inter]">
 
-  <script>
-    async function cargarEstudiantes() {
-      const status = document.getElementById("status");
-      const grid = document.getElementById("grid");
-      try {
-        const resp = await fetch("/api/estudiantes");
-        const json = await resp.json();
+<header class="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest shadow-[0_1px_8px_rgba(0,0,0,0.06)]">
+  <div class="h-16 w-full px-4 md:px-8 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-2">
+      <div class="w-9 h-9 rounded-lg bg-primary-container flex items-center justify-center text-on-primary shadow-sm">
+        <span class="material-symbols-outlined text-[20px]">school</span>
+      </div>
+      <div class="flex flex-col">
+        <span class="text-[16px] font-semibold tracking-tight leading-tight">Tablero de Avance</span>
+        <span class="text-[11px] text-on-surface-variant leading-tight">API Maestro-Detalle con Catálogo y Control de Estado</span>
+      </div>
+    </div>
+    <div class="flex items-center gap-3">
+      <div class="hidden sm:flex flex-col text-right">
+        <span class="text-[13px] font-semibold leading-tight">Boris Alexander Quiroa Orellana</span>
+        <span class="text-[11px] text-on-surface-variant leading-tight">Carnet: 1890-22-1413</span>
+      </div>
+      <div class="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-on-primary text-[13px] font-bold shadow-sm">
+        BQ
+      </div>
+    </div>
+  </div>
+</header>
 
-        if (!json.ok) {
-          status.textContent = "Error: " + json.error;
-          return;
-        }
+<main class="w-full pt-16 bg-surface min-h-screen">
+  <div class="w-full px-4 md:px-8 py-8 max-w-[1400px] mx-auto">
 
-        const estudiantes = json.data;
-        if (estudiantes.length === 0) {
-          status.textContent = "";
-          grid.innerHTML = '<p class="empty">Todavía no hay estudiantes registrados. Envía un POST a /api/registro para empezar.</p>';
-          return;
-        }
+    <!-- Page header -->
+    <div class="flex flex-col mb-6">
+      <h1 class="text-[26px] font-semibold tracking-tight">Seguimiento de Progreso por Estudiante</h1>
+      <p class="text-on-surface-variant text-[14px] mt-1">Monitoreo en tiempo real de las misiones completadas por cada estudiante, vía la API conectada a SQL Server.</p>
+    </div>
 
-        status.textContent = `${estudiantes.length} estudiante(s) registrado(s).`;
-        grid.innerHTML = estudiantes.map(renderCard).join("");
-      } catch (err) {
-        status.textContent = "No se pudo conectar con la API: " + err.message;
-      }
-    }
+    <!-- KPI cards -->
+    <div id="kpiGrid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
+      <!-- filled by JS -->
+    </div>
 
-    function renderCard(est) {
-      const total = est.completadas + est.pendientes;
-      const pct = total > 0 ? Math.round((est.completadas / total) * 100) : 0;
+    <!-- Filter pills -->
+    <div class="bg-surface-container-lowest p-2 rounded-xl shadow-sm mb-6 flex flex-wrap items-center gap-1" id="filterBar">
+      <!-- filled by JS -->
+    </div>
 
-      const misionesHtml = est.misiones
-        .map(
-          (m) => `
-        <li>
-          <span>${m.nombre}</span>
-          <span class="badge ${m.estado ? "completa" : "pendiente"}">
-            ${m.estado ? "Completada" : "Pendiente"}
-          </span>
-        </li>`
-        )
-        .join("");
+    <p id="status" class="text-on-surface-variant text-[13px] mb-4">Cargando datos...</p>
 
-      return `
-        <div class="card">
-          <h2>${est.nombre}</h2>
-          <div class="correo">${est.carnet} · ${est.correo}</div>
-          <div class="stats">
-            <span>${est.completadas}/${total} misiones</span>
-            <span>${pct}%</span>
+    <!-- Student cards grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5" id="grid"></div>
+  </div>
+</main>
+
+<footer class="w-full bg-surface-container-low mt-8">
+  <div class="w-full px-4 md:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-on-surface-variant text-[12px]">
+    <span>Reto de Desarrollo Web · API de Estudiantes y Misiones</span>
+    <span id="apiStatus" class="flex items-center gap-1.5">
+      <span class="w-2 h-2 rounded-full bg-outline"></span> Verificando API...
+    </span>
+  </div>
+</footer>
+
+<script>
+  let allStudents = [];
+  let currentFilter = "todos";
+
+  const filters = [
+    { key: "todos", label: "Todos" },
+    { key: "completo", label: "Completado 100%" },
+    { key: "progreso", label: "En Progreso" },
+    { key: "pendiente", label: "Sin iniciar (0%)" },
+  ];
+
+  function categoria(pct) {
+    if (pct >= 100) return "completo";
+    if (pct === 0) return "pendiente";
+    return "progreso";
+  }
+
+  function renderFilterBar() {
+    const bar = document.getElementById("filterBar");
+    bar.innerHTML = filters
+      .map((f) => {
+        const count = allStudents.filter((e) => {
+          const total = e.completadas + e.pendientes;
+          const pct = total > 0 ? Math.round((e.completadas / total) * 100) : 0;
+          return f.key === "todos" || categoria(pct) === f.key;
+        }).length;
+        const active = currentFilter === f.key;
+        return `<button data-key="${f.key}" class="px-3 py-1.5 rounded-lg text-[13px] font-medium transition-colors ${
+          active
+            ? "bg-primary-container text-on-primary shadow-sm"
+            : "text-on-surface-variant hover:bg-surface-container-low"
+        }">${f.label} <span class="ml-1 ${active ? "text-on-primary/80" : "text-outline"}">${count}</span></button>`;
+      })
+      .join("");
+
+    bar.querySelectorAll("button").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        currentFilter = btn.dataset.key;
+        renderFilterBar();
+        renderGrid();
+      });
+    });
+  }
+
+  function renderKPIs() {
+    const totalEstudiantes = allStudents.length;
+    const totalCompletadas = allStudents.reduce((sum, e) => sum + e.completadas, 0);
+    const totalMisionesPosibles = allStudents.reduce((sum, e) => sum + e.completadas + e.pendientes, 0);
+    const totalPendientes = totalMisionesPosibles - totalCompletadas;
+    const promedios = allStudents.map((e) => {
+      const total = e.completadas + e.pendientes;
+      return total > 0 ? (e.completadas / total) * 100 : 0;
+    });
+    const promedioGeneral = promedios.length
+      ? (promedios.reduce((a, b) => a + b, 0) / promedios.length).toFixed(1)
+      : "0.0";
+
+    const kpis = [
+      {
+        label: "Total de Estudiantes",
+        value: totalEstudiantes,
+        icon: "group",
+        sub: "registrados",
+        barPct: 100,
+        barColor: "bg-primary-container",
+      },
+      {
+        label: "Misiones Completadas",
+        value: totalCompletadas,
+        icon: "task_alt",
+        sub: `/ ${totalMisionesPosibles} total`,
+        barPct: totalMisionesPosibles ? (totalCompletadas / totalMisionesPosibles) * 100 : 0,
+        barColor: "bg-secondary",
+      },
+      {
+        label: "Misiones Pendientes",
+        value: totalPendientes,
+        icon: "schedule",
+        sub: "por completar",
+        barPct: totalMisionesPosibles ? (totalPendientes / totalMisionesPosibles) * 100 : 0,
+        barColor: "bg-tertiary-container",
+      },
+      {
+        label: "Promedio de Avance",
+        value: promedioGeneral + "%",
+        icon: "analytics",
+        sub: "entre todos",
+        barPct: promedioGeneral,
+        barColor: "bg-primary-container",
+      },
+    ];
+
+    document.getElementById("kpiGrid").innerHTML = kpis
+      .map(
+        (k) => `
+      <div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-[13px] text-on-surface-variant">${k.label}</span>
+          <div class="w-8 h-8 rounded-lg bg-surface-container-low flex items-center justify-center text-primary">
+            <span class="material-symbols-outlined text-[18px]">${k.icon}</span>
           </div>
-          <div class="progress-bar">
-            <div class="progress-fill" style="width:${pct}%"></div>
-          </div>
-          <ul class="misiones">${misionesHtml || "<li>Sin misiones registradas</li>"}</ul>
         </div>
-      `;
+        <div class="flex items-baseline gap-2 mb-2">
+          <span class="text-[28px] font-bold">${k.value}</span>
+          <span class="text-[12px] text-on-surface-variant">${k.sub}</span>
+        </div>
+        <div class="w-full bg-surface-container-low h-1 rounded-full overflow-hidden">
+          <div class="${k.barColor} h-full rounded-full" style="width:${k.barPct}%"></div>
+        </div>
+      </div>`
+      )
+      .join("");
+  }
+
+  function renderGrid() {
+    const grid = document.getElementById("grid");
+    const filtered = allStudents.filter((e) => {
+      if (currentFilter === "todos") return true;
+      const total = e.completadas + e.pendientes;
+      const pct = total > 0 ? Math.round((e.completadas / total) * 100) : 0;
+      return categoria(pct) === currentFilter;
+    });
+
+    if (filtered.length === 0) {
+      grid.innerHTML = `<p class="text-on-surface-variant col-span-full text-center py-10">No hay estudiantes en esta categoría.</p>`;
+      return;
     }
 
-    cargarEstudiantes();
-    // Refresca cada 5 segundos por si se hacen POSTs desde Postman/Insomnia
-    setInterval(cargarEstudiantes, 5000);
-  </script>
+    grid.innerHTML = filtered.map(renderCard).join("");
+  }
+
+  function iniciales(nombre) {
+    return nombre
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((p) => p[0])
+      .join("")
+      .toUpperCase();
+  }
+
+  function renderCard(est) {
+    const total = est.completadas + est.pendientes;
+    const pct = total > 0 ? Math.round((est.completadas / total) * 100) : 0;
+    const cat = categoria(pct);
+
+    const badgeMap = {
+      completo: `<span class="px-2 py-0.5 rounded-full bg-secondary-container/40 text-secondary text-[11px] font-semibold flex items-center gap-1"><span class="material-symbols-outlined text-[13px]">verified</span>Completo</span>`,
+      progreso: `<span class="px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant text-[11px] font-semibold">En progreso</span>`,
+      pendiente: `<span class="px-2 py-0.5 rounded-full bg-error-container text-on-error-container text-[11px] font-semibold">Sin iniciar</span>`,
+    };
+
+    const barColorMap = {
+      completo: "bg-secondary",
+      progreso: "bg-primary-container",
+      pendiente: "bg-error",
+    };
+
+    const misionesHtml = est.misiones
+      .map(
+        (m) => `
+      <div class="flex items-center justify-between p-2 rounded-lg bg-surface-container-lowest">
+        <div class="flex items-center gap-2 min-w-0 pr-2">
+          <span class="material-symbols-outlined text-[18px] ${m.estado ? "text-secondary" : "text-outline"}">
+            ${m.estado ? "check_circle" : "radio_button_unchecked"}
+          </span>
+          <span class="text-[13px] font-medium truncate">${m.nombre}</span>
+        </div>
+        <span class="px-2 py-0.5 rounded-full text-[11px] font-medium shrink-0 ${
+          m.estado
+            ? "bg-secondary-container/30 text-secondary"
+            : "bg-surface-container-high text-on-surface-variant"
+        }">${m.estado ? "Completada" : "Pendiente"}</span>
+      </div>`
+      )
+      .join("");
+
+    return `
+      <div class="bg-surface-container-lowest rounded-xl shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden">
+        <div class="p-4">
+          <div class="flex items-start justify-between gap-2 mb-2">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-primary-container/20 text-primary flex items-center justify-center font-bold text-[13px]">
+                ${iniciales(est.nombre)}
+              </div>
+              <div class="flex flex-col min-w-0">
+                <h2 class="text-[15px] font-semibold leading-tight truncate">${est.nombre}</h2>
+                <span class="text-[12px] text-on-surface-variant font-mono">${est.carnet}</span>
+              </div>
+            </div>
+            ${badgeMap[cat]}
+          </div>
+          <div class="flex items-center gap-1.5 text-on-surface-variant text-[12px] mb-3">
+            <span class="material-symbols-outlined text-[14px]">mail</span>
+            <span class="truncate">${est.correo}</span>
+          </div>
+          <div class="bg-surface-container-low/60 p-2.5 rounded-lg">
+            <div class="flex items-baseline justify-between mb-1.5">
+              <span class="text-[12px] font-medium">Progreso Total</span>
+              <div class="flex items-baseline gap-1">
+                <span class="text-[16px] font-bold">${pct}%</span>
+                <span class="text-[11px] text-on-surface-variant">(${est.completadas} de ${total})</span>
+              </div>
+            </div>
+            <div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+              <div class="${barColorMap[cat]} h-full rounded-full transition-all duration-500" style="width:${pct}%"></div>
+            </div>
+          </div>
+        </div>
+        <div class="px-4 pb-4 flex flex-col gap-1.5">
+          ${misionesHtml || `<p class="text-on-surface-variant text-[12px]">Sin misiones registradas</p>`}
+        </div>
+      </div>`;
+  }
+
+  async function cargarEstudiantes() {
+    const status = document.getElementById("status");
+    const apiStatus = document.getElementById("apiStatus");
+    try {
+      const resp = await fetch("/api/estudiantes");
+      const json = await resp.json();
+
+      if (!json.ok) {
+        status.textContent = "Error: " + json.error;
+        return;
+      }
+
+      allStudents = json.data;
+      apiStatus.innerHTML = `<span class="w-2 h-2 rounded-full bg-secondary"></span> API conectada`;
+
+      if (allStudents.length === 0) {
+        status.textContent = "";
+        document.getElementById("grid").innerHTML =
+          '<p class="text-on-surface-variant col-span-full text-center py-10">Todavía no hay estudiantes registrados. Envía un POST a /api/registro para empezar.</p>';
+        document.getElementById("kpiGrid").innerHTML = "";
+        document.getElementById("filterBar").innerHTML = "";
+        return;
+      }
+
+      status.textContent = `${allStudents.length} estudiante(s) registrado(s).`;
+      renderKPIs();
+      renderFilterBar();
+      renderGrid();
+    } catch (err) {
+      status.textContent = "No se pudo conectar con la API: " + err.message;
+      apiStatus.innerHTML = `<span class="w-2 h-2 rounded-full bg-error"></span> Sin conexión`;
+    }
+  }
+
+  cargarEstudiantes();
+  setInterval(cargarEstudiantes, 5000);
+</script>
 </body>
 </html>
